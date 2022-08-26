@@ -176,12 +176,12 @@ func buildIpldGraph(ctx context.Context, fileList []Finfo, parentPath, carDir st
 				return
 			}
 			/*
-			fn, ok := fileNode.(*dag.ProtoNode)
-			if !ok {
-				emsg := "file node should be *dag.ProtoNode"
-				log.Warn(emsg)
-				return
-			}
+				fn, ok := fileNode.(*dag.ProtoNode)
+				if !ok {
+					emsg := "file node should be *dag.ProtoNode"
+					log.Warn(emsg)
+					return
+				}
 			*/
 			lock.Lock()
 			fileNodeMap[item.Path] = fileNode

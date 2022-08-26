@@ -2,12 +2,9 @@ package graphsplit
 
 import (
 	"context"
-	"encoding/csv"
 	"fmt"
 	"os"
 	"path"
-	"strconv"
-	"time"
 
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log/v2"
@@ -19,57 +16,6 @@ var log = logging.Logger("graphsplit")
 type GraphBuildCallback interface {
 	OnSuccess(node ipld.Node, graphName, fsDetail string)
 	OnError(error)
-}
-
-type commPCallback struct {
-	carDir     string
-	rename     bool
-	addPadding bool
-}
-
-func (cc *commPCallback) OnSuccess(node ipld.Node, graphName, fsDetail string) {
-	fmt.Println("xxxxx")
-	commpStartTime := time.Now()
-	carfilepath := path.Join(cc.carDir, node.Cid().String()+".car")
-	cpRes, err := CalcCommP(context.TODO(), carfilepath, cc.rename, cc.addPadding)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Infof("calculation of pieceCID completed, time elapsed: %s", time.Now().Sub(commpStartTime))
-	// Add node inof to manifest.csv
-	manifestPath := path.Join(cc.carDir, "manifest.csv")
-	_, err = os.Stat(manifestPath)
-	if err != nil && !os.IsNotExist(err) {
-		log.Fatal(err)
-	}
-	var isCreateAction bool
-	if err != nil && os.IsNotExist(err) {
-		isCreateAction = true
-	}
-	f, err := os.OpenFile(manifestPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	csvWriter := csv.NewWriter(f)
-	csvWriter.UseCRLF = true
-	defer csvWriter.Flush()
-	if isCreateAction {
-		csvWriter.Write([]string{
-			"playload_cid", "filename", "piece_cid", "payload_size", "piece_size", "detail",
-		})
-	}
-
-	if err := csvWriter.Write([]string{
-		node.Cid().String(), graphName, cpRes.Root.String(), strconv.FormatInt(cpRes.PayloadSize, 10), strconv.FormatUint(uint64(cpRes.Size), 10), fsDetail,
-	}); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func (cc *commPCallback) OnError(err error) {
-	log.Fatal(err)
 }
 
 type csvCallback struct {
@@ -111,10 +57,6 @@ type errCallback struct{}
 func (cc *errCallback) OnSuccess(ipld.Node, string, string) {}
 func (cc *errCallback) OnError(err error) {
 	log.Fatal(err)
-}
-
-func CommPCallback(carDir string, rename, addPadding bool) GraphBuildCallback {
-	return &commPCallback{carDir: carDir, rename: rename, addPadding: addPadding}
 }
 
 func CSVCallback(carDir string) GraphBuildCallback {
