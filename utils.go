@@ -104,7 +104,7 @@ func (b *FSBuilder) getNodeByLink(ln *format.Link) (fn fsNode, err error) {
 
 	nnd, ok := nd.(*dag.ProtoNode)
 	if !ok {
-		err = xerrors.Errorf("failed to transformed to dag.ProtoNode")
+		//err = xerrors.Errorf("failed to transformed to dag.ProtoNode")
 		return
 	}
 	fsn, err := unixfs.FSNodeFromBytes(nnd.Data())
@@ -139,11 +139,11 @@ func buildIpldGraph(ctx context.Context, fileList []Finfo, parentPath, carDir st
 	bs2 := bstore.NewBlockstore(dss.MutexWrap(datastore.NewMapDatastore()))
 	dagServ := merkledag.NewDAGService(blockservice.New(bs2, offline.Exchange(bs2)))
 
-	cidBuilder, err := merkledag.PrefixForCidVersion(0)
+	cidBuilder, err := merkledag.PrefixForCidVersion(1)
 	if err != nil {
 		return nil, "", err
 	}
-	fileNodeMap := make(map[string]*dag.ProtoNode)
+	fileNodeMap := make(map[string]ipld.Node)
 	dirNodeMap := make(map[string]*dag.ProtoNode)
 
 	var rootNode *dag.ProtoNode
@@ -175,14 +175,16 @@ func buildIpldGraph(ctx context.Context, fileList []Finfo, parentPath, carDir st
 				log.Warn(err)
 				return
 			}
+			/*
 			fn, ok := fileNode.(*dag.ProtoNode)
 			if !ok {
 				emsg := "file node should be *dag.ProtoNode"
 				log.Warn(emsg)
 				return
 			}
+			*/
 			lock.Lock()
-			fileNodeMap[item.Path] = fn
+			fileNodeMap[item.Path] = fileNode
 			lock.Unlock()
 			fmt.Println(item.Path)
 			log.Infof("file node: %s", fileNode)
@@ -403,7 +405,7 @@ func BuildFileNode(item Finfo, bufDs ipld.DAGService, cidBuilder cid.Builder) (n
 
 	params := ihelper.DagBuilderParams{
 		Maxlinks:   UnixfsLinksPerLevel,
-		RawLeaves:  false,
+		RawLeaves:  true,
 		CidBuilder: cidBuilder,
 		Dagserv:    bufDs,
 		NoCopy:     false,

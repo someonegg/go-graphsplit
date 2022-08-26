@@ -43,7 +43,7 @@ func Import(ctx context.Context, target, mongouri string) error {
 	dagServ := merkledag.NewDAGService(blockservice.New(bs2, offline.Exchange(bs2)))
 
 	// cidbuilder
-	cidBuilder, err := merkledag.PrefixForCidVersion(0)
+	cidBuilder, err := merkledag.PrefixForCidVersion(1)
 	if err != nil {
 		return err
 	}
