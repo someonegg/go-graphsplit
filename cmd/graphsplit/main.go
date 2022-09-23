@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/filedrive-team/go-graphsplit"
-	"github.com/filedrive-team/go-graphsplit/dataset"
 	logging "github.com/ipfs/go-log/v2"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -19,7 +18,6 @@ func main() {
 	local := []*cli.Command{
 		chunkCmd,
 		restoreCmd,
-		importDatasetCmd,
 	}
 
 	app := &cli.App{
@@ -142,27 +140,5 @@ var restoreCmd = &cli.Command{
 
 		fmt.Println("completed!")
 		return nil
-	},
-}
-
-var importDatasetCmd = &cli.Command{
-	Name:  "import-dataset",
-	Usage: "import files from the specified dataset",
-	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:     "dsmongo",
-			Required: true,
-			Usage:    "specify the mongodb connection",
-		},
-	},
-	Action: func(c *cli.Context) error {
-		ctx := context.Background()
-
-		targetPath := c.Args().First()
-		if !graphsplit.ExistDir(targetPath) {
-			return xerrors.Errorf("Unexpected! The path to dataset does not exist")
-		}
-
-		return dataset.Import(ctx, targetPath, c.String("dsmongo"))
 	},
 }

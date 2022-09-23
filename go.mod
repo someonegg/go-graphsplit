@@ -3,7 +3,7 @@ module github.com/filedrive-team/go-graphsplit
 go 1.15
 
 require (
-	github.com/beeleelee/go-ds-rpc v0.1.0 // this needs to be updated too https://github.com/beeleelee/go-ds-rpc/pull/3
+	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20190812055157-5d271430af9f // indirect
 	github.com/ipfs/go-blockservice v0.3.0
 	github.com/ipfs/go-cid v0.1.0
@@ -22,9 +22,13 @@ require (
 	github.com/ipld/go-codec-dagpb v1.4.0 // indirect
 	github.com/ipld/go-ipld-prime v0.16.0
 	github.com/klauspost/cpuid/v2 v2.0.12 // indirect
+	github.com/libp2p/go-libp2p v0.16.0 // indirect
+	github.com/libp2p/go-libp2p-record v0.1.3 // indirect
 	github.com/multiformats/go-base32 v0.0.4 // indirect
+	github.com/multiformats/go-multiaddr v0.4.1 // indirect
 	github.com/smartystreets/assertions v1.0.1 // indirect
 	github.com/urfave/cli/v2 v2.6.0
+	github.com/warpfork/go-testmark v0.9.0 // indirect
 	github.com/whyrusleeping/cbor-gen v0.0.0-20220323183124-98fa8256a799 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.21.0 // indirect
